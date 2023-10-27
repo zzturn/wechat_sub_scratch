@@ -13,6 +13,19 @@ import json
 import base64
 
 
+def retry_func(func, url, max_retries=3):
+    for i in range(max_retries):
+        try:
+            result = func(url)
+        except Exception as e:
+            print(f"Retry {i + 1} failed, retrying...")
+            continue
+        if result is not None:
+            return result
+        print(f"Retry {i + 1} failed, retrying...")
+    return None
+
+
 def get_bak_doc_html(doc_data: dict, doc_html_type: str = "default") -> str:
     """返回不同doc_html类型下的最终html
 
@@ -32,9 +45,7 @@ def get_bak_doc_html(doc_data: dict, doc_html_type: str = "default") -> str:
     online_func = lambda url: get_html_by_requests(
         url=url, headers={"User-Agent": Config.LL_SPIDER_UA}
     )
-    wechat_func = lambda url: get_wechat_html_by_requests(
-        url=url
-    )
+    wechat_func = lambda url: retry_func(get_wechat_html_by_requests, url)
     if doc_html_type == "online":
         doc_html = online_func(doc_link)
     elif doc_html_type == "book":

@@ -53,15 +53,6 @@ def get_html_by_requests(url: str, params: dict = None, timeout: int = 3, **kwar
     return text
 
 
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-gpu')
-options.add_argument('--disable-dev-shm-usage')
-driver = webdriver.Remote(
-    command_executor='http://selenium_chrome:4444/wd/hub',
-    options=options)
-
 def get_wechat_html_by_requests(url: str):
     """发起GET请求，获取文本
 
@@ -70,8 +61,16 @@ def get_wechat_html_by_requests(url: str):
     """
     # resp = send_get_request(url=url, params=params, timeout=timeout, **kwargs)
     text = None
+    driver = None
     try:
-
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--disable-dev-shm-usage')
+        driver = webdriver.Remote(
+            command_executor='http://selenium_chrome:4444/wd/hub',
+            options=options)
 
         driver.get(url)
 
@@ -109,6 +108,10 @@ def get_wechat_html_by_requests(url: str):
         text = new_soup.prettify()
     except Exception as e:
         LOGGER.exception(f"请求内容提取出错 - {url} - {str(e)}")
+    finally:
+        if driver:
+            driver.quit()
+            LOGGER.info(f"关闭 selenium driver")
     return text
 
 

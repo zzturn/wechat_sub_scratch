@@ -74,6 +74,9 @@ def backup_doc(backup_config: dict):
                         doc_data=each_data,
                         doc_html_type=doc_html_dict.get(doc_source, "default"),
                     )
+                    if not doc_html:
+                        LOGGER.error(f"获取文档失败! data: {each_data}")
+                        continue
                     LOGGER.info(f"已抓取到内容, length: {len(doc_html)}")
                     # 执行获取文本后的钩子函数
                     for func_dict in after_get_content:
