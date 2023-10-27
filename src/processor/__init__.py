@@ -10,10 +10,12 @@ from .text_utils import (
     extract_keyword_list,
     html_to_text_h2t,
     str_replace,
+    summarize,
 )
 
 processor_dict = {
     "to_rss": to_rss,
     "ad_marker": ad_marker,
     "str_replace": str_replace,
+    "summarize": summarize,
 }

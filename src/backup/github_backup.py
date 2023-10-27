@@ -12,6 +12,7 @@ from src.config import Config
 from src.utils import LOGGER
 from src.backup.utils import GitHubRepo
 
+
 class GithubBackup(BackupBase):
     """基于Github进行文章备份"""
 
@@ -23,7 +24,7 @@ class GithubBackup(BackupBase):
         super().__init__(backup_type="github", init_config=init_config or {})
         github_token = init_config.get("github_token", Config.LL_GITHUB_TOKEN)
         github_repo = init_config.get("github_repo", Config.LL_GITHUB_REPO)
-        self.repo = GitHubRepo(token=github_token, repo=github_repo)
+        self.repo = GitHubRepo(token=github_token, repo=github_repo, base_url=Config.LL_GITHUB_BASE_URL)
         # 是否每次更新都强制备份，默认只备份一次
         self.force_backup = init_config.get("force_backup", False)
 
@@ -43,7 +44,13 @@ class GithubBackup(BackupBase):
         # 源文件
         doc_html = backup_data["doc_html"]
 
-        file_path = f"{doc_source}/{doc_source_name}/{doc_name}.html"
+        path_in_repo = Config.LL_GITHUB_BACKUP_PATH_IN_REPO.format_map(
+            {
+                "doc_source": doc_source,
+                "doc_source_name": doc_source_name,
+                "doc_name": doc_name,
+            }
+        )
         is_backup = self.is_backup(
             doc_source=doc_source,
             doc_source_name=doc_source_name,
@@ -59,13 +66,13 @@ class GithubBackup(BackupBase):
                 try:
                     # 存在就更新
                     self.repo.update_file(
-                        file_path, doc_html, f"Update {file_path}"
+                        path_in_repo, doc_html, f"Update {path_in_repo}"
                     )
                 except Exception as _:
                     # 不存在就上传
-                    self.repo.create_file(file_path, doc_html, f"Add {file_path}")
+                    self.repo.create_file(path_in_repo, doc_html, f"Add {path_in_repo}")
 
-                LOGGER.info(f"Backup({self.backup_type}): {file_path} 备份成功！")
+                LOGGER.info(f"Backup({self.backup_type}): {path_in_repo} 备份成功！")
                 # 保存当前文章状态
                 self.save_backup(
                     doc_source=doc_source,
@@ -73,9 +80,9 @@ class GithubBackup(BackupBase):
                     doc_name=doc_name,
                 )
             except GithubException as e:
-                LOGGER.error(f"Backup({self.backup_type}): {file_path} 备份失败！{e}")
+                LOGGER.error(f"Backup({self.backup_type}): {path_in_repo} 备份失败！{e}")
         else:
-            LOGGER.info(f"Backup({self.backup_type}): {file_path} 已存在！")
+            LOGGER.info(f"Backup({self.backup_type}): {path_in_repo} 已存在！")
 
     def delete(self, doc_source: str, doc_source_name: str, doc_name: str) -> bool:
         """删除某个文件

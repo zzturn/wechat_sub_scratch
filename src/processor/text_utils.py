@@ -5,7 +5,7 @@
 """
 import os
 import re
-
+import zhipuai
 from urllib.parse import urljoin
 
 import html2text
@@ -102,7 +102,7 @@ def extract_chapters(chapter_url, html):
     # 去重
     all_chapters_sorted = []
     for index, value in enumerate(all_chapters):
-        if value not in all_chapters[index + 1 :]:
+        if value not in all_chapters[index + 1:]:
             all_chapters_sorted.append(value)
     return all_chapters_sorted
 
@@ -159,6 +159,43 @@ def html_to_text_h2t(html: str):
     _, summary = extract_core_html(html)
     text = h.handle(summary)
     return text.strip()
+
+
+def summarize(api_key, model_name, prompt, custom_filter, retry_times=3, **kwargs):
+    mongo_base = MongodbManager.get_mongo_base(mongodb_config=Config.LL_MONGODB_CONFIG)
+    coll = mongo_base.get_collection(coll_name="liuli_articles")
+
+    query = {}
+    query.update(custom_filter or {})
+
+    # 查找没有被标记的文章，基于相似度模型进行判断
+    for each_data in coll.find(query):
+        doc_name = each_data["doc_name"]
+        doc_source_name = each_data["doc_source_name"]
+        doc_content = each_data["doc_content"]
+        format_map = {"title": doc_name, "content": doc_content}
+        for i in range(retry_times):
+            try:
+                response = summarize_content(api_key, prompt.format_map(format_map), model_name, **kwargs)
+                if response.code == 200:
+                    coll.update_one(
+                        filter={"doc_id": each_data["doc_id"]},
+                        update={"$set": {"doc_summary": response.data.choices[0].content}},
+                    )
+                    LOGGER.info(f"🐱 文章->{doc_name} 摘要第生成成功! Cost: {response.data.usage}")
+                    break
+            except Exception as e:
+                LOGGER.error(f"😿 文章->{doc_name} 摘要第 {i + 1} 次生成失败! Error: {str(e)}")
+                continue
+
+
+def summarize_content(api_key, prompt: str, model_name="chatglm_trubo", **kwargs):
+    response = zhipuai.model_api.invoke(model=model_name,
+                                        prompt=[{"role": "user", "content": prompt}],
+                                        temperature=0.2,
+                                        top_p=0.7,
+                                        **kwargs)
+    return response
 
 
 def str_replace(text: str, before_str: str, after_str: str) -> str:

@@ -24,6 +24,7 @@ pygithub = "*"
 feedparser = "*"
 beautifulsoup4 = "*"
 selenium = "*"
+zhipuai = '*'
 
 [dev-packages]
 black = "*"

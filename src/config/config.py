@@ -89,15 +89,17 @@ class Config:
     # TG分发器参数配置
     LL_TG_CHAT_ID = os.getenv("LL_TG_CHAT_ID", "")
     LL_TG_TOKEN = os.getenv("LL_TG_TOKEN", "")
-    LL_TG_BASE_URL = os.getenv("LL_TG_BASE_URL", "https://api.telegram.org")
+    LL_TG_BASE_URL = os.getenv("LL_TG_BASE_URL", "https://api.telegram.org").rstrip("/")
     # Bark 分发器参数配置
     LL_BARK_URL = os.getenv("LL_BARK_URL", "")
 
     # 备份器配置
     LL_GITHUB_TOKEN = os.getenv("LL_GITHUB_TOKEN", "")
     LL_GITHUB_REPO = os.getenv("LL_GITHUB_REPO", "")
-    LL_GITHUB_DOMAIN = os.getenv("LL_GITHUB_DOMAIN", "")
-    LL_GITHUB_BASE_URL = os.getenv("LL_GITHUB_BASE_URL", "https://api.github.com")
+    LL_GITHUB_DOMAIN = os.getenv("LL_GITHUB_DOMAIN", "").rstrip("/")
+    LL_GITHUB_BASE_URL = os.getenv("LL_GITHUB_BASE_URL", "https://api.github.com").rstrip("/")
+    LL_GITHUB_BACKUP_PATH_IN_REPO = os.getenv("LL_GITHUB_BACKUP_PATH_IN_REPO",
+                                              "{doc_source}/{doc_source_name}/{doc_name}.html").lstrip("/")
 
     @staticmethod
     def set_config(config_data: dict):
