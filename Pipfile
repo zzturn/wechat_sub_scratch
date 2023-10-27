@@ -1,0 +1,49 @@
+[[source]]
+name = "pypi"
+verify_ssl = true
+url = "https://pypi.douban.com/simple/"
+
+[packages]
+# Common
+pymongo = "*"
+html5lib = "*"
+bs4 = "*"
+cchardet = "*"
+readability-lxml = "*"
+html2text = "*"
+requests = "*"
+jieba = "*"
+pytz = "*"
+# Schedule
+ruia = ">=0.8.3"
+ruia-ua = "*"
+xmltodict = "*"
+schedule = "*"
+feedgen = "*"
+pygithub = "*"
+feedparser = "*"
+beautifulsoup4 = "*"
+selenium = "*"
+
+[dev-packages]
+black = "*"
+isort = "*"
+pylint = "*"
+pytest = "*"
+pandas = "*"
+numpy = "*"
+pypinyin = "*"
+playwright = "*"
+flask = "==2.0.2"
+gunicorn = "==20.1.0"
+gevent = "==21.12.0"
+flask-jwt-extended = "==4.3.1"
+pyexecjs = "*"
+
+[scripts]
+local_schedule = "bash ./start.sh schedule local"
+dev_schedule = "bash ./start.sh schedule dev"
+pro_schedule = "bash ./start.sh schedule pro"
+local_api = "bash ./start.sh api local"
+dev_api = "bash ./start.sh api dev"
+pro_api = "bash ./start.sh api pro"

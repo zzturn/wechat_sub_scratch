@@ -1,0 +1,64 @@
+.app-content {
+  margin: 0;
+  // background-color: white;
+  border-radius: 15px;
+  min-height: calc(100vh - 100px);
+  height: 100%;
+  padding: 20px;
+}
+
+div,
+section {
+  outline:none;
+  margin-bottom: 0px;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: #f2f4f7;
+  --block-spacing-vertical: 0rem !important;
+  --el-header-padding: 0px !important;
+}
+
+.content {
+  margin-left: 250px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.el-header {
+  padding: 0 !important;
+}
+
+.el-menu {
+  border-right: 0px !important;
+}
+
+div,
+section {
+  margin-bottom: 0px;
+  box-sizing: border-box;
+}
+
+.scroll-box::-webkit-scrollbar {
+    width: 4px;
+    // height: 10px; // 高度写不写，都不影响，因为会根据内容的长度自动计算
+}
+
+.scroll-box::-webkit-scrollbar-thumb {
+    background: #e6e9ec; // 滑块颜色
+    border-radius: 5px; // 滑块圆角
+}
+
+.scroll-box::-webkit-scrollbar-thumb:hover {
+    background: #ccc; // 鼠标移入滑块变红
+}
+
+.scroll-box::-webkit-scrollbar-track {
+    border-radius: 10px; // 轨道圆角
+    // background-color: #1890ff // 轨道颜色 
+}

@@ -1,0 +1,43 @@
+version: "3"
+services:
+  liuli_api:
+    image: liuliio/api:v0.1.4
+    restart: always
+    container_name: liuli_api
+    ports:
+      - "8765:8765"
+    volumes:
+      - ./pro.env:/data/code/pro.env
+    depends_on:
+      - liuli_mongodb
+    networks:
+      - liuli-network
+  liuli_schedule:
+    image: liuliio/schedule:v0.2.4
+    restart: always
+    container_name: liuli_schedule
+    volumes:
+      - ./pro.env:/data/code/pro.env
+      - ./liuli_config:/data/code/liuli_config
+    depends_on:
+      - liuli_mongodb
+    networks:
+      - liuli-network
+  liuli_mongodb:
+    image: mongo:3.6
+    restart: always
+    container_name: liuli_mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=liuli
+      - MONGO_INITDB_ROOT_PASSWORD=liuli
+    ports:
+      - "27027:27017"
+    volumes:
+      - ./mongodb_data:/data/db
+    command: mongod
+    networks:
+      - liuli-network
+
+networks:
+  liuli-network:
+    driver: bridge
